@@ -29,6 +29,11 @@ class ShortenedUrl < ApplicationRecord
     through: :visits,
     source: :user
 
+    has_many :distinct_users,
+      -> { distinct },
+      through: :visits,
+      source: :user
+
   def self.random_code
     code = SecureRandom::urlsafe_base64
     while ShortenedUrl.exists?(short_url: code)
@@ -44,4 +49,17 @@ class ShortenedUrl < ApplicationRecord
       submitter_id: user.id
       })
   end
+
+  def num_clicks
+    visits.count
+  end
+
+  def num_uniques
+    self.distinct_users.count
+  end
+
+  def num_recent_uniques(minutes)
+    self.distinct_users.where('created_at >= ?', minutes.minutes.ago).count
+  end
+
 end
