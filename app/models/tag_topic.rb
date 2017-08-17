@@ -10,5 +10,12 @@ class TagTopic < ApplicationRecord
     through: :taggings,
     source: :url
 
-  
+  def popular_links
+    all_sorted = self.tagged_urls.sort_by { |url| -url.num_clicks }
+
+    all_sorted[0..4].each do |url|
+      puts "#{url.long_url} has #{url.num_clicks} visits"
+    end
+  end
+
 end
